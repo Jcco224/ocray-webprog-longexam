@@ -178,3 +178,10 @@ long-exam1/
 - `node_modules/` and `dist/` are not included in the structure above because they are generated folders.
 - The application uses `Layout.jsx` for public pages and `AuthLayout.jsx` for authentication pages.
 - Product routes use the product `name` value from `product-content.js` as the URL slug.
+
+## Enhancement Instructions
+- Enhancement 1: Develop an original product catalog with appropriate product names, descriptions, prices, categories, and images.
+- Enhancement 2: Create a customized footer and notfoundpage that aligns with the website theme and ensure that all links function correctly.
+- Enhancement 3: Provide accessible navigation links for both Sign In and Sign Up pages.
+- Enhancement 4: Improve the overall visual design through consistent colors, typography, spacing, and imagery without changing the existing component order or page structure.
+- Enhancement 5: Research and apply a custom font to the web application using an appropriate implementation method.
