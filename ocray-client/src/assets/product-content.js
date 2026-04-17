@@ -1,7 +1,19 @@
+import toteBagImage from './img/images/tte.jpg';
+import notesPackImage from './img/images/NUstickers.webp';
+import tumblerImage from './img/images/tumb.jpg';
+import studyLampImage from './img/images/NUballs.webp';
+import hoodieImage from './img/images/Nuhood.webp';
+import organizerKitImage from './img/images/NUcap.webp';
+import lanyardImage from './img/images/NUlace.webp';
+import carePackImage from './img/images/NUchain.webp';
+import jerseyImage from './img/images/NUjers.webp';
+import shirtImage from './img/images/NUshirt.webp';
+
 const products = [
   {
     name: 'campus-tote-bag',
     title: 'Campus Tote Bag',
+    image: toteBagImage,
     category: 'Bags',
     price: 'PHP 499',
     stock: 'In stock',
@@ -14,6 +26,7 @@ const products = [
   {
     name: 'daily-notes-pack',
     title: 'Daily Notes Pack',
+    image: notesPackImage,
     category: 'Stationery',
     price: 'PHP 249',
     stock: 'In stock',
@@ -26,6 +39,7 @@ const products = [
   {
     name: 'stainless-tumbler',
     title: 'Stainless Tumbler',
+    image: tumblerImage,
     category: 'Drinkware',
     price: 'PHP 599',
     stock: 'Low stock',
@@ -38,6 +52,7 @@ const products = [
   {
     name: 'wireless-study-lamp',
     title: 'Wireless Study Lamp',
+    image: studyLampImage,
     category: 'Tech',
     price: 'PHP 899',
     stock: 'In stock',
@@ -50,6 +65,7 @@ const products = [
   {
     name: 'hoodie-jacket',
     title: 'Hoodie Jacket',
+    image: hoodieImage,
     category: 'Apparel',
     price: 'PHP 1,199',
     stock: 'Preorder',
@@ -62,6 +78,7 @@ const products = [
   {
     name: 'desk-organizer-kit',
     title: 'Desk Organizer Kit',
+    image: organizerKitImage,
     category: 'Workspace',
     price: 'PHP 349',
     stock: 'In stock',
@@ -74,6 +91,7 @@ const products = [
   {
     name: 'id-lanyard-set',
     title: 'ID Lanyard Set',
+    image: lanyardImage,
     category: 'Accessories',
     price: 'PHP 179',
     stock: 'In stock',
@@ -86,6 +104,7 @@ const products = [
   {
     name: 'exam-week-care-pack',
     title: 'Exam Week Care Pack',
+    image: carePackImage,
     category: 'Bundles',
     price: 'PHP 399',
     stock: 'In stock',
@@ -93,6 +112,32 @@ const products = [
       'A compact bundle with snacks, tabs, pens, and quick notes for busy review weeks.',
       'Packed for convenience so students can grab one kit and focus on studying.',
       'Ideal as a personal prep item or a small gift for classmates.',
+    ],
+  },
+  {
+    name: 'varsity-jersey',
+    title: 'Varsity Jersey',
+    image: jerseyImage,
+    category: 'Apparel',
+    price: 'PHP 1,499',
+    stock: 'In stock',
+    content: [
+      'A lightweight campus jersey made for events, game days, and casual school wear.',
+      'It has a breathable feel, relaxed fit, and bold school-inspired look.',
+      'Easy to pair with jeans, joggers, or shorts for a sporty everyday outfit.',
+    ],
+  },
+  {
+    name: 'classic-campus-shirt',
+    title: 'Classic Campus Shirt',
+    image: shirtImage,
+    category: 'Apparel',
+    price: 'PHP 699',
+    stock: 'In stock',
+    content: [
+      'A simple campus shirt designed for daily wear, organization events, and casual Fridays.',
+      'The fabric feels soft and light enough for long hours around school.',
+      'A clean option for students who want easy school merch they can wear often.',
     ],
   },
 ];

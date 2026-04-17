@@ -1,50 +1,43 @@
 import Button from '../components/Button';
 
-const NotFoundPage = () => {
+function NotFoundPage() {
   return (
-    <div className="flex w-full flex-col gap-6">
-      <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <div className="max-w-3xl">
-          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
-            Error
-          </p>
-          <h1 className="text-6xl font-bold leading-tight text-zinc-900 sm:text-7xl">
-            404
-          </h1>
-          <p className="mt-4 text-lg leading-7 text-zinc-600">
-            Page not found. The page you're looking for doesn't exist or has been moved.
-          </p>
-          <div className="mt-6 flex gap-3">
-            <Button to="/">Back Home</Button>
-            <Button to="/products">View Products</Button>
+    <div className="flex w-full justify-center bg-[#cfe4ef] px-4 py-10 sm:px-6 lg:px-8">
+      <section className="relative w-full max-w-6xl overflow-hidden rounded-[2rem] bg-[#f2f2f2] shadow-[0_20px_40px_rgba(0,0,0,0.12)]">
+        <div className="h-12 w-full bg-blue-600 sm:h-14">
+          <div className="flex h-full items-center gap-3 px-6">
+            <span className="h-3.5 w-3.5 rounded-full bg-white/95"></span>
+            <span className="h-3.5 w-3.5 rounded-full bg-white/95"></span>
+            <span className="h-3.5 w-3.5 rounded-full bg-white/95"></span>
           </div>
         </div>
-      </section>
-
-      <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <div className="max-w-3xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
-            Quick Links
+        <div className="relative flex min-h-[520px] flex-col items-center justify-center px-6 py-16 text-center sm:px-10">
+          <div className="absolute -bottom-10 -left-10 rotate-[-28deg]">
+            <div className="relative h-64 w-56 rounded-sm border-[4px] border-slate-700 bg-[#d9dde3]">
+              <div className="absolute -top-[4px] left-0 h-14 w-20 -skew-y-[24deg] border-l-[4px] border-t-[4px] border-slate-700 bg-[#eef1f4]"></div>
+              <div className="absolute left-7 top-20 h-3 w-8 rounded-full bg-slate-700"></div>
+              <div className="absolute right-10 top-20 h-3 w-3 rounded-full bg-slate-700"></div>
+              <div className="absolute left-16 top-32 h-3 w-3 rounded-full bg-slate-700"></div>
+              <div className="absolute right-12 top-[7.5rem] h-10 w-3 rotate-[45deg] rounded-full bg-slate-700"></div>
+              <div className="absolute left-10 top-[10.5rem] h-3 w-16 rotate-[18deg] rounded-full bg-slate-700"></div>
+            </div>
+          </div>
+          <h1 className="text-[110px] font-black leading-none tracking-tight text-[#132b57] sm:text-[160px] md:text-[200px]">
+            404
+          </h1>
+          <p className="-mt-2 text-2xl font-semibold text-[#132b57] sm:text-4xl">
+            Page Not Found
           </p>
-          <h2 className="mt-2 text-2xl font-semibold text-zinc-900">Explore the site</h2>
-          
-          <div className="mt-6 space-y-3">
-            <div className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-4">
-              <h3 className="font-semibold text-zinc-900">Home</h3>
-              <p className="mt-1 text-sm text-zinc-600">Return to the homepage</p>
-              <Button to="/" className="mt-3">Go Home</Button>
-            </div>
-            
-            <div className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-4">
-              <h3 className="font-semibold text-zinc-900">Products</h3>
-              <p className="mt-1 text-sm text-zinc-600">Browse all featured store items</p>
-              <Button to="/products" className="mt-3">View Products</Button>
-            </div>
+          <p className="mt-4 max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
+            Sorry, the page you are trying to visit does not exist or may have been moved.
+          </p>
+          <div className="mt-8">
+            <Button to="/">Back Home</Button>
           </div>
         </div>
       </section>
     </div>
-  )
+  );
 }
 
-export default NotFoundPage
+export default NotFoundPage;
