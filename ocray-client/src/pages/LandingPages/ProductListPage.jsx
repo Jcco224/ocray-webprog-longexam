@@ -56,12 +56,15 @@ const ProductListPage = () => {
         </div>
       </section>
 
-      <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <div className="mb-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
+      <section className="rounded-[2rem] border border-yellow-500/20 bg-[linear-gradient(180deg,#090909_0%,#111111_100%)] px-4 py-6 shadow-[0_24px_80px_rgba(0,0,0,0.32)] sm:px-6 sm:py-8 lg:px-8">
+        <div className="mb-6 text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-yellow-400/80">
             Featured Products
           </p>
-          <h2 className="mt-2 text-2xl font-semibold text-zinc-900">Product card grid</h2>
+          <h2 className="mt-2 text-3xl font-semibold text-white">Product card grid</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
+            Explore our featured lineup in a darker, more premium product showcase built for the NU Bulldog Exchange look.
+          </p>
         </div>
 
         <ProductList products={products} />

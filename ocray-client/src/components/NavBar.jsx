@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import logo from '../assets/img/nubdexchange_logo.png';
+import logo from '../assets/img/images/NULOGO.png';
 
 const links = [
   { label: 'Home', to: '/' },

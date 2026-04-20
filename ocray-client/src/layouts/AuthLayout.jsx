@@ -1,19 +1,23 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import logo from '../assets/img/nubdexchange_logo.png';
+import logo from '../assets/img/images/NULOGO.png';
 import bulldogVisual from '../assets/img/bannerdog.png';
 
 const panelContent = {
   '/auth/signin': {
-    eyebrow: 'Welcome Back',
-    title: 'Log back in and pick up where your campus shopping left off.',
-    body: 'Review orders, save essentials, and keep your favorite NU Bulldog merch one tap away.',
-    ctaLabel: 'Create Account',
+    headerLabel: 'Log In',
+    titleTop: 'NU BULLDOG',
+    titleBottom: 'EXCHANGE',
+    body: 'Buy. Sell. Exchange.',
+    accent: 'Just for Bulldogs.',
+    ctaLabel: 'Sign Up',
     ctaTo: '/auth/signup',
   },
   '/auth/signup': {
-    eyebrow: 'Join BulldogEx',
-    title: 'Create your account and unlock a stronger NU campus store experience.',
-    body: 'Get faster checkout, track orders, and browse black-and-gold campus picks built for students.',
+    headerLabel: 'Sign Up',
+    titleTop: 'JOIN THE',
+    titleBottom: 'PACK',
+    body: 'Create your Bulldog Exchange account.',
+    accent: 'Campus gear starts here.',
     ctaLabel: 'Log In',
     ctaTo: '/auth/signin',
   },
@@ -24,75 +28,83 @@ const AuthLayout = () => {
   const content = panelContent[location.pathname] ?? panelContent['/auth/signin'];
 
   return (
-    <section className="min-h-screen bg-[linear-gradient(135deg,#040404_0%,#111111_55%,#1a1a1a_100%)] px-4 py-6 text-zinc-900 sm:px-6 lg:px-8 lg:py-8">
-      <div className="relative mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-7xl overflow-hidden rounded-[2.5rem] border border-yellow-500/25 bg-zinc-50 shadow-[0_32px_120px_rgba(0,0,0,0.42)]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(250,204,21,0.14),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(250,204,21,0.10),transparent_30%)]" />
-
-        <aside className="relative hidden lg:flex lg:w-[44%] lg:flex-col lg:justify-between lg:overflow-hidden lg:bg-[linear-gradient(180deg,#0b0b0b_0%,#171717_100%)] lg:p-10">
-          <div className="absolute -left-16 bottom-[-5rem] h-64 w-64 rounded-full bg-yellow-400/14 blur-3xl" />
-          <div className="absolute right-[-3rem] top-[-3rem] h-48 w-48 rounded-full border-[18px] border-yellow-400/20 border-l-transparent border-b-transparent" />
-          <div className="relative">
-            <Link to="/" className="inline-flex items-center gap-4">
-              <img src={logo} alt="BulldogEx Shop" className="h-16 w-16 rounded-full border-2 border-yellow-500 bg-zinc-50 object-contain" />
+    <section className="min-h-screen bg-[#050505] text-white">
+      <div className="border-b border-white/10 bg-black/90 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
+          <div className="flex items-center gap-4">
+            <Link to="/" className="flex items-center gap-4">
+              <img src={logo} alt="NU Bulldog Exchange" className="h-14 w-14 object-contain sm:h-16 sm:w-16" />
               <div>
-                <p className="text-3xl font-black text-yellow-400">BulldogEx Shop</p>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-zinc-400">
-                  Official Campus Store
+                <p className="text-lg font-black uppercase tracking-[0.08em] text-yellow-400 sm:text-2xl">
+                  NU Bulldog
+                </p>
+                <p className="text-sm font-black uppercase tracking-[0.12em] text-white sm:text-xl">
+                  Exchange
                 </p>
               </div>
             </Link>
           </div>
 
-          <div className="relative z-10 max-w-md">
-            <p className="inline-flex rounded-full border border-yellow-500/30 bg-yellow-400/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.34em] text-yellow-300">
-              {content.eyebrow}
-            </p>
-            <h1 className="mt-6 text-5xl font-black leading-[0.95] text-white">
-              {content.title}
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-zinc-300">
-              {content.body}
-            </p>
-            <Link
-              to={content.ctaTo}
-              className="mt-8 inline-flex items-center justify-center rounded-full border-2 border-yellow-500 px-8 py-4 text-sm font-semibold uppercase tracking-[0.28em] text-yellow-400 transition hover:bg-yellow-500 hover:text-zinc-950"
-            >
-              {content.ctaLabel}
-            </Link>
-          </div>
+          <a
+            href="mailto:support@nubulldogexchange.com"
+            className="text-sm font-medium text-yellow-300 transition hover:text-yellow-200 sm:text-base"
+          >
+            Need help?
+          </a>
+        </div>
+      </div>
 
-          <div className="relative flex items-end justify-between gap-6">
-            <div className="max-w-[10rem] rounded-[1.5rem] border border-yellow-500/20 bg-zinc-900/80 p-4 backdrop-blur">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-zinc-400">Campus Pick</p>
-              <p className="mt-3 text-2xl font-black text-yellow-400">NU Bulldog</p>
-              <p className="mt-2 text-sm leading-6 text-zinc-300">
-                Strong identity, official merch, and a sharper student storefront.
-              </p>
-            </div>
+      <div className="relative isolate overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_left_center,rgba(217,163,46,0.14),transparent_32%),radial-gradient(circle_at_right_center,rgba(217,163,46,0.08),transparent_28%)]" />
+        <div className="absolute inset-y-0 left-0 w-[46%] bg-[radial-gradient(circle_at_20%_40%,rgba(214,171,72,0.12),transparent_30%)]" />
+        <div className="absolute inset-y-0 right-0 w-[18%] bg-[radial-gradient(circle_at_50%_50%,rgba(247,196,74,0.18),transparent_50%)] opacity-80" />
+        <div className="absolute inset-x-0 bottom-0 h-56 bg-[linear-gradient(135deg,transparent_0%,rgba(220,170,55,0.24)_10%,transparent_25%,transparent_70%,rgba(220,170,55,0.24)_86%,transparent_100%)]" />
+
+        <div className="relative mx-auto grid min-h-[calc(100vh-5.5rem)] w-full max-w-[1600px] gap-12 px-5 py-10 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:px-12 lg:py-14">
+          <aside className="relative flex min-h-[420px] items-center justify-center overflow-hidden rounded-[2rem] border border-yellow-500/10 bg-[linear-gradient(145deg,rgba(11,11,11,0.96),rgba(20,20,20,0.84))] px-6 py-10 shadow-[0_30px_80px_rgba(0,0,0,0.45)] lg:min-h-[720px]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_35%,rgba(255,214,102,0.08),transparent_32%),linear-gradient(180deg,rgba(0,0,0,0.08),rgba(0,0,0,0.45))]" />
             <img
               src={bulldogVisual}
-              alt="NU Bulldog visual"
-              className="h-[23rem] w-auto object-contain drop-shadow-[0_24px_50px_rgba(0,0,0,0.5)]"
+              alt=""
+              className="absolute left-[-12%] top-1/2 hidden w-[72%] -translate-y-1/2 opacity-12 saturate-0 lg:block"
             />
-          </div>
-        </aside>
-
-        <main className="relative flex w-full items-center justify-center px-6 py-10 sm:px-10 lg:w-[56%] lg:px-14">
-          <div className="w-full max-w-2xl">
-            <div className="mb-8 lg:hidden">
-              <Link to="/" className="inline-flex items-center gap-3">
-                <img src={logo} alt="BulldogEx Shop" className="h-12 w-12 rounded-full border-2 border-yellow-500 bg-zinc-50 object-contain" />
-                <div>
-                  <p className="text-2xl font-black text-zinc-950">BulldogEx Shop</p>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-zinc-500">
-                    Official Campus Store
-                  </p>
-                </div>
-              </Link>
+            <div className="relative z-10 flex max-w-xl flex-col items-center text-center">
+              <img
+                src={logo}
+                alt="NU Bulldog Exchange logo"
+                className="h-40 w-40 object-contain drop-shadow-[0_12px_30px_rgba(230,179,62,0.22)] sm:h-52 sm:w-52"
+              />
+              <div className="mt-8">
+                <p className="text-4xl font-black uppercase tracking-[0.08em] text-yellow-400 sm:text-6xl">
+                  {content.titleTop}
+                </p>
+                <p className="mt-2 text-3xl font-black uppercase tracking-[0.34em] text-white sm:text-5xl">
+                  {content.titleBottom}
+                </p>
+              </div>
+              <p className="mt-10 text-2xl font-medium text-zinc-100 sm:text-4xl">
+                {content.body}
+              </p>
+              <p className="mt-3 text-2xl font-medium text-yellow-400 sm:text-4xl">
+                {content.accent}
+              </p>
             </div>
-            <Outlet />
-          </div>
-        </main>
+          </aside>
+
+          <main className="relative flex items-center justify-center">
+            <div className="w-full max-w-xl">
+              <Outlet />
+              {location.pathname === '/auth/signin' ? null : (
+                <div className="mt-6 text-center text-sm text-zinc-400">
+                  Already have an account?{' '}
+                  <Link to={content.ctaTo} className="font-semibold text-yellow-300 transition hover:text-yellow-200">
+                    {content.ctaLabel}
+                  </Link>
+                </div>
+              )}
+            </div>
+          </main>
+        </div>
       </div>
     </section>
   );

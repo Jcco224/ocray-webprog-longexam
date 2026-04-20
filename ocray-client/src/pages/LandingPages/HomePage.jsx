@@ -153,7 +153,7 @@ const HomePage = () => {
                         <p className="mt-3 text-base leading-7 text-zinc-300">
                             Bags, tumblers, lanyards, and items used every school day.
                         </p>
-                        <Button to="/products" className="mt-6 px-5 py-3 text-xs tracking-[0.24em] border-yellow-500 bg-yellow-400 text-zinc-950 hover:bg-yellow-300" variant="primary">View Products</Button>
+                        <Button to="/products" className="mt-6 px-5 py-3 text-xs tracking-[0.24em] border-[#D4AF37] bg-[#D4AF37] text-black hover:border-[#b89222] hover:bg-[#b89222]" variant="primary">View Products</Button>
                     </article>
 
                     <article className="group overflow-hidden rounded-[2rem] border border-yellow-500/20 bg-[linear-gradient(180deg,rgba(24,24,27,0.96)_0%,rgba(9,9,11,0.98)_100%)] p-4 shadow-[0_22px_48px_rgba(0,0,0,0.28)] transition hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(0,0,0,0.34)]">
@@ -173,7 +173,7 @@ const HomePage = () => {
                         <p className="mt-3 text-base leading-7 text-zinc-300">
                             Notes, desk tools, and study kits for class and review weeks.
                         </p>
-                        <Button to="/products" className="mt-6 px-5 py-3 text-xs tracking-[0.24em] border-yellow-500 bg-yellow-400 text-zinc-950 hover:bg-yellow-300" variant="primary">Shop Supplies</Button>
+                        <Button to="/products" className="mt-6 px-5 py-3 text-xs tracking-[0.24em] border-[#D4AF37] bg-[#D4AF37] text-black hover:border-[#b89222] hover:bg-[#b89222]" variant="primary">Shop Supplies</Button>
                     </article>
 
                     <article className="group overflow-hidden rounded-[2rem] border border-yellow-500/20 bg-[linear-gradient(180deg,rgba(24,24,27,0.96)_0%,rgba(9,9,11,0.98)_100%)] p-4 shadow-[0_22px_48px_rgba(0,0,0,0.28)] transition hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(0,0,0,0.34)]">
@@ -193,7 +193,7 @@ const HomePage = () => {
                         <p className="mt-3 text-base leading-7 text-zinc-300">
                             Comfortable pieces for class days, commute days, and weekends.
                         </p>
-                        <Button to="/products" className="mt-6 px-5 py-3 text-xs tracking-[0.24em] border-yellow-500 bg-yellow-400 text-zinc-950 hover:bg-yellow-300" variant="primary">
+                        <Button to="/products" className="mt-6 px-5 py-3 text-xs tracking-[0.24em] border-[#D4AF37] bg-[#D4AF37] text-black hover:border-[#b89222] hover:bg-[#b89222]" variant="primary">
                             View Apparel
                         </Button>
                     </article>
