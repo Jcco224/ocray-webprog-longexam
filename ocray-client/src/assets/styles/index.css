@@ -2,11 +2,41 @@
 
 @layer base {
   body {
-    @apply bg-zinc-100 text-zinc-900 antialiased;
+    @apply bg-[#f8f3e8] text-zinc-900 antialiased;
     font-family: Optima, Candara, "Noto Sans", sans-serif;
   }
 
   #root {
     @apply min-h-screen;
+  }
+}
+
+@layer components {
+  .gold-silk-page {
+    background-color: #d9c49a;
+    background-image:
+      linear-gradient(rgba(118, 78, 24, 0.2), rgba(224, 197, 145, 0.32)),
+      url('../img/gold-silk-bg.png');
+    background-position: center top;
+    background-size: cover;
+    background-attachment: fixed;
+    background-blend-mode: multiply;
+  }
+
+  .gold-silk-surface {
+    background-color: #d5bc89;
+    background-image:
+      linear-gradient(rgba(104, 65, 16, 0.2), rgba(220, 188, 125, 0.28)),
+      url('../img/gold-silk-bg.png');
+    background-position: center;
+    background-size: cover;
+    background-blend-mode: multiply;
+  }
+
+  .gold-glass-card {
+    background: rgba(245, 231, 201, 0.88);
+    border-color: rgba(180, 129, 28, 0.28);
+    box-shadow: 0 20px 55px rgba(112, 75, 18, 0.14);
+    backdrop-filter: blur(16px);
   }
 }

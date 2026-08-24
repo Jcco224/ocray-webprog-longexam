@@ -138,7 +138,7 @@ const products = [
       'A simple campus shirt designed for daily wear, organization events, and casual Fridays.',
       'The fabric feels soft and light enough for long hours around school.',
       'A clean option for students who want easy school merch they can wear often.',
-    ],
+      ],
   },
 ];
 

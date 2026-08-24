@@ -1,10 +1,48 @@
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../../components/Button.jsx';
-import products from '../../assets/product-content.js'
+import localProducts from '../../assets/product-content.js';
+import { adaptProduct, addCartItem, fetchProduct, getToken } from '../../services/api.js';
 
 function ProductPage() {
   const { name } = useParams();
-  const product = products.find(product => product.name === name);
+  const navigate = useNavigate();
+  const [product, setProduct] = useState(() => localProducts.find((item) => item.name === name));
+  const [loading, setLoading] = useState(true);
+  const [cartStatus, setCartStatus] = useState({ loading: false, message: '', error: false });
+
+  useEffect(() => {
+    let active = true;
+    fetchProduct(name)
+      .then(({ product: apiProduct }) => {
+        if (active) setProduct(adaptProduct(apiProduct, localProducts));
+      })
+      .catch(() => {})
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [name]);
+
+  const handleAddToCart = async () => {
+    if (!getToken()) {
+      navigate('/auth/signin');
+      return;
+    }
+    if (!product.id) {
+      setCartStatus({ loading: false, message: 'Start the API and seed MongoDB before adding items.', error: true });
+      return;
+    }
+    setCartStatus({ loading: true, message: '', error: false });
+    try {
+      await addCartItem(product.id);
+      setCartStatus({ loading: false, message: 'Added to your cart.', error: false });
+    } catch (error) {
+      setCartStatus({ loading: false, message: error.message, error: true });
+    }
+  };
+
+  if (loading && !product) {
+    return <p className="px-6 py-16 text-center text-zinc-600">Loading product...</p>;
+  }
 
   if (!product) {
     return (
@@ -59,8 +97,15 @@ function ProductPage() {
           </div>
 
           <div className="mt-8 border-t-2 border-zinc-900 pt-6">
-            <Button variant="primary" className="mr-3">Add to Cart</Button>
+            <Button variant="primary" className="mr-3" onClick={handleAddToCart} disabled={cartStatus.loading}>
+              {cartStatus.loading ? 'Adding...' : 'Add to Cart'}
+            </Button>
             <Button to="/products">Back to Products</Button>
+            {cartStatus.message && (
+              <p role="status" className={`mt-4 text-sm ${cartStatus.error ? 'text-red-700' : 'text-green-700'}`}>
+                {cartStatus.message}
+              </p>
+            )}
           </div>
         </div>
       </section>

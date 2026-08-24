@@ -1,0 +1,25 @@
+export const productSeeds = [
+  ['campus-tote-bag', 'Campus Tote Bag', 'Bags', 499, 30, 'in_stock', 'tte.jpg'],
+  ['daily-notes-pack', 'Daily Notes Pack', 'Stationery', 249, 50, 'in_stock', 'NUstickers.webp'],
+  ['stainless-tumbler', 'Stainless Tumbler', 'Drinkware', 599, 5, 'low_stock', 'tumb.jpg'],
+  ['wireless-study-lamp', 'Wireless Study Lamp', 'Tech', 899, 20, 'in_stock', 'NUballs.webp'],
+  ['hoodie-jacket', 'Hoodie Jacket', 'Apparel', 1199, 0, 'preorder', 'Nuhood.webp'],
+  ['desk-organizer-kit', 'Desk Organizer Kit', 'Workspace', 349, 25, 'in_stock', 'NUcap.webp'],
+  ['id-lanyard-set', 'ID Lanyard Set', 'Accessories', 179, 80, 'in_stock', 'NUlace.webp'],
+  ['exam-week-care-pack', 'Exam Week Care Pack', 'Bundles', 399, 40, 'in_stock', 'NUchain.webp'],
+  ['varsity-jersey', 'Varsity Jersey', 'Apparel', 1499, 20, 'in_stock', 'NUjers.webp'],
+  ['classic-campus-shirt', 'Classic Campus Shirt', 'Apparel', 699, 35, 'in_stock', 'NUshirt.webp'],
+].map(([slug, title, category, price, stockQuantity, availability, imageKey], index) => ({
+  slug,
+  title,
+  category,
+  price,
+  stockQuantity,
+  availability,
+  imageKey,
+  isFeatured: index < 4,
+  descriptions: [
+    `${title} is an official Bulldogs Exchange campus product designed for everyday student use.`,
+    'Available through the NU Bulldog Exchange storefront while supplies last.',
+  ],
+}));

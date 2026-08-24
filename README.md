@@ -2,6 +2,8 @@
 
 This repository contains a React frontend built with Vite, React Router, and Tailwind CSS.
 
+It also contains the restored `ocray-server` backend, built with Express, MongoDB, and Mongoose using an MVC-oriented folder structure.
+
 The current project is **BulldogEx Shop**, a low-fidelity e-commerce wireframe for campus products. It includes a full-width hero banner, product catalog cards, product detail pages, store information pages, shared layouts, and authentication screens.
 
 ## Tech Stack
@@ -11,6 +13,22 @@ The current project is **BulldogEx Shop**, a low-fidelity e-commerce wireframe f
 - React Router DOM
 - Tailwind CSS 4
 - ESLint
+- Node.js and Express 5
+- MongoDB and Mongoose
+- JSON Web Token authentication
+
+## Backend Quick Start
+
+From the repository root:
+
+```bash
+cd ocray-server
+npm install
+npm run verify
+npm run demo
+```
+
+`npm run demo` provides a zero-configuration temporary MongoDB database on port 5000. In a second terminal, start the client with `cd ocray-client && npm run dev`. For persistent data, copy `ocray-server/.env.example` to `.env`, configure MongoDB, run `npm run seed`, and then use `npm run dev`.
 
 ## Main Features
 

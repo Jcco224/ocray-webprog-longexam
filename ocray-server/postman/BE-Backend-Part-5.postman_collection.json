@@ -1,0 +1,276 @@
+{
+  "info": {
+    "_postman_id": "3bcd73c6-d45d-4b45-a8b9-0db0bb7d22a6",
+    "name": "BE Backend - Part 5 API Testing",
+    "description": "Run requests from top to bottom. IDs and the admin token are saved automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{token}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "adminEmail", "value": "ocray@admin.com" },
+    { "key": "adminPassword", "value": "CHANGE_ME" },
+    { "key": "token", "value": "" },
+    { "key": "runId", "value": "" },
+    { "key": "categoryId", "value": "" },
+    { "key": "categorySlug", "value": "" },
+    { "key": "productId", "value": "" },
+    { "key": "productSlug", "value": "" },
+    { "key": "supplierId", "value": "" },
+    { "key": "supplierSlug", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "00 - Login",
+      "request": {
+        "auth": { "type": "noauth" },
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"login\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/auth/login"
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": { "exec": ["pm.collectionVariables.set('runId', Date.now().toString());"] }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Login returns 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.expect(body.token).to.be.a('string');",
+              "pm.collectionVariables.set('token', body.token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 - Category",
+      "item": [
+        {
+          "name": "01 Create Category",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Part 5 Uniform {{runId}}\",\n  \"slug\": \"part-5-uniform-{{runId}}\",\n  \"description\": \"Test category for Part 5.\",\n  \"imageKey\": \"uniform.webp\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/category"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Category created with 201', () => pm.response.to.have.status(201));",
+                "const category = pm.response.json().category;",
+                "pm.collectionVariables.set('categoryId', category._id);",
+                "pm.collectionVariables.set('categorySlug', category.slug);"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "02 Retrieve All Categories",
+          "request": { "method": "GET", "url": "{{baseUrl}}/category" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Categories return 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "03 Retrieve One Category",
+          "request": { "method": "GET", "url": "{{baseUrl}}/category/{{categorySlug}}" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Category returns 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "04 Update Category",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Updated category description for Part 5.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/category/{{categoryId}}"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Category updated with 200', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "02 - Product",
+      "item": [
+        {
+          "name": "01 Create Product",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"part-5-test-shirt-{{runId}}\",\n  \"title\": \"Part 5 Test Shirt\",\n  \"descriptions\": [\"Product created for Part 5 API testing.\"],\n  \"category\": \"{{categoryId}}\",\n  \"price\": 799,\n  \"stockQuantity\": 20,\n  \"availability\": \"in_stock\",\n  \"imageKey\": \"test-shirt.webp\",\n  \"isFeatured\": false,\n  \"isActive\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/product"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Product created with 201', () => pm.response.to.have.status(201));",
+                "const product = pm.response.json().product;",
+                "pm.collectionVariables.set('productId', product._id);",
+                "pm.collectionVariables.set('productSlug', product.slug);"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "02 Retrieve All Products",
+          "request": { "method": "GET", "url": "{{baseUrl}}/product" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Products return 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "03 Retrieve One Product",
+          "request": { "method": "GET", "url": "{{baseUrl}}/product/{{productSlug}}" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Product returns 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "04 Update Product",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 749,\n  \"stockQuantity\": 18\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/product/{{productId}}"
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Product updated with 200', () => pm.response.to.have.status(200));", "pm.expect(pm.response.json().product.price).to.eql(749);"] }
+          }]
+        },
+        {
+          "name": "05 Pagination",
+          "request": { "method": "GET", "url": "{{baseUrl}}/product?page=1&limit=5" },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Pagination returns 200', () => pm.response.to.have.status(200));", "const p = pm.response.json().pagination;", "pm.expect(p.page).to.eql(1);", "pm.expect(p.limit).to.eql(5);"] }
+          }]
+        },
+        {
+          "name": "06 Filter by Category",
+          "request": { "method": "GET", "url": "{{baseUrl}}/product?category={{categorySlug}}" },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Filtering returns 200', () => pm.response.to.have.status(200));", "const products = pm.response.json().products;", "pm.expect(products.length).to.be.above(0);", "products.forEach((product) => pm.expect(product.category.slug).to.eql(pm.collectionVariables.get('categorySlug')));"] }
+          }]
+        },
+        {
+          "name": "07 Sort by Price",
+          "request": { "method": "GET", "url": "{{baseUrl}}/product?sort=price&limit=5" },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Sorting returns 200', () => pm.response.to.have.status(200));", "const prices = pm.response.json().products.map((product) => product.price);", "pm.expect(prices).to.eql([...prices].sort((a, b) => a - b));"] }
+          }]
+        }
+      ]
+    },
+    {
+      "name": "03 - Supplier",
+      "item": [
+        {
+          "name": "01 Create Supplier",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Part 5 NU Supplier {{runId}}\",\n  \"slug\": \"part-5-nu-supplier-{{runId}}\",\n  \"contactPerson\": \"Alex Santos\",\n  \"email\": \"part5-{{runId}}@example.com\",\n  \"phone\": \"09171234567\",\n  \"address\": \"Sampaloc, Manila\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/supplier"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Supplier created with 201', () => pm.response.to.have.status(201));",
+                "const supplier = pm.response.json().supplier;",
+                "pm.collectionVariables.set('supplierId', supplier._id);",
+                "pm.collectionVariables.set('supplierSlug', supplier.slug);"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "02 Retrieve All Suppliers",
+          "request": { "method": "GET", "url": "{{baseUrl}}/supplier" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Suppliers return 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "03 Retrieve One Supplier",
+          "request": { "method": "GET", "url": "{{baseUrl}}/supplier/{{supplierSlug}}" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Supplier returns 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "04 Update Supplier",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"09179876543\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/supplier/{{supplierId}}"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Supplier updated with 200', () => pm.response.to.have.status(200));", "pm.expect(pm.response.json().supplier.phone).to.eql('09179876543');"] } }]
+        }
+      ]
+    },
+    {
+      "name": "04 - Delete and Status Codes",
+      "item": [
+        {
+          "name": "01 Delete Product",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/product/{{productId}}" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Product deletion returns 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "02 Deleted Product Returns 404",
+          "request": { "method": "GET", "url": "{{baseUrl}}/product/{{productSlug}}" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Deleted product returns 404', () => pm.response.to.have.status(404));"] } }]
+        },
+        {
+          "name": "03 Delete Supplier",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/supplier/{{supplierId}}" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Supplier deletion returns 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "04 Deleted Supplier Returns 404",
+          "request": { "method": "GET", "url": "{{baseUrl}}/supplier/{{supplierSlug}}" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Deleted supplier returns 404', () => pm.response.to.have.status(404));"] } }]
+        },
+        {
+          "name": "05 Delete Category",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/category/{{categoryId}}" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Category deletion returns 200', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    }
+  ]
+}

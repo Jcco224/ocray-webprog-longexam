@@ -1,13 +1,32 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button';
+import { loginAccount, saveToken } from '../../services/api';
 
 const inputClasses =
   'mt-3 w-full rounded-2xl border border-white/15 bg-[#080808] px-5 py-4 text-base text-white outline-none transition placeholder:text-zinc-500 focus:border-yellow-400 focus:bg-[#0f0f0f]';
 
 const actionButtonClassName =
-  'w-full rounded-2xl border-[#d7ab4b] bg-[#d7ab4b] py-4 text-lg tracking-[0.08em] text-black hover:bg-[#efc966] hover:border-[#efc966]';
+  'w-full rounded-2xl border-[#d7ab4b] bg-[#d7ab4b] py-4 text-lg tracking-[0.08em] hover:bg-[#efc966] hover:border-[#efc966]';
 
 const SignInPage = () => {
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ login: '', password: '' });
+  const [status, setStatus] = useState({ loading: false, error: '' });
+
+  const handleChange = ({ target }) => setForm((current) => ({ ...current, [target.name]: target.value }));
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setStatus({ loading: true, error: '' });
+    try {
+      const result = await loginAccount(form);
+      saveToken(result.token);
+      navigate('/products');
+    } catch (error) {
+      setStatus({ loading: false, error: error.message });
+    }
+  };
+
   return (
     <div className="rounded-[2rem] border border-white/15 bg-[linear-gradient(180deg,rgba(8,8,8,0.96),rgba(12,12,12,0.9))] p-6 shadow-[0_28px_90px_rgba(0,0,0,0.5)] backdrop-blur sm:p-8 lg:p-10">
       <div className="flex items-center justify-between gap-4">
@@ -24,17 +43,21 @@ const SignInPage = () => {
         </div>
       </div>
 
-      <form className="mt-10 space-y-6">
+      <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
         <div>
           <label htmlFor="signin-username" className="text-sm font-medium text-zinc-300">
             Username
           </label>
           <input
             id="signin-username"
+            name="login"
             type="text"
             placeholder="Enter your username"
             autoComplete="username"
             className={inputClasses}
+            value={form.login}
+            onChange={handleChange}
+            required
           />
         </div>
 
@@ -43,30 +66,36 @@ const SignInPage = () => {
             <label htmlFor="signin-password" className="text-sm font-medium text-zinc-300">
               Password
             </label>
-            <button type="button" className="text-sm font-medium text-yellow-300 transition hover:text-yellow-200">
+            <button type="button" className="text-sm font-medium text-white transition hover:text-white">
               Forgot Password
             </button>
           </div>
           <input
             id="signin-password"
+            name="password"
             type="password"
             placeholder="Enter your password"
             autoComplete="current-password"
             className={inputClasses}
+            value={form.password}
+            onChange={handleChange}
+            required
           />
         </div>
 
-        <Button type="submit" variant="primary" className={actionButtonClassName}>
-          Log In
+        {status.error && <p role="alert" className="rounded-xl bg-red-950/60 p-3 text-sm text-red-200">{status.error}</p>}
+
+        <Button type="submit" variant="primary" className={actionButtonClassName} disabled={status.loading}>
+          {status.loading ? 'Logging In...' : 'Log In'}
         </Button>
 
         <p className="border-t border-white/10 pt-6 text-center text-sm leading-7 text-zinc-400">
           By logging in, you agree to NU Bulldog Exchange&apos;s{' '}
-          <button type="button" className="font-medium text-yellow-300 transition hover:text-yellow-200">
+          <button type="button" className="font-medium text-white transition hover:text-white">
             Terms of Service
           </button>{' '}
           and{' '}
-          <button type="button" className="font-medium text-yellow-300 transition hover:text-yellow-200">
+          <button type="button" className="font-medium text-white transition hover:text-white">
             Privacy Policy
           </button>
           .

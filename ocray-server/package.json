@@ -1,0 +1,33 @@
+{
+  "name": "ocray-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bulldogs Exchange Express and MongoDB API",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "demo": "node src/demo-server.js",
+    "start": "node src/server.js",
+    "seed": "node src/scripts/seed.js",
+    "seed:part7": "node src/scripts/seed-part7.js",
+    "reset:admin": "node src/scripts/reset-admin.js",
+    "create:indexes": "node src/scripts/create-indexes.js",
+    "verify": "node src/scripts/verify-models.js",
+    "verify:api": "node src/scripts/verify-api.js",
+    "verify:v1": "node src/scripts/verify-v1-api.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.1",
+    "morgan": "^1.10.1"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^10.3.0",
+    "nodemon": "^3.1.10"
+  }
+}
