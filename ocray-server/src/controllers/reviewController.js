@@ -8,6 +8,18 @@ export async function listProductReviews(req, res) {
   res.json({ success: true, reviews });
 }
 
+export async function listReviews(req, res) {
+  const filter = {};
+  if (req.query.approved !== undefined) filter.isApproved = req.query.approved === 'true';
+
+  const reviews = await Review.find(filter)
+    .populate('user', 'username firstName lastName email')
+    .populate('product', 'slug title')
+    .sort({ createdAt: -1 });
+
+  return res.json({ success: true, reviews });
+}
+
 export async function createReview(req, res) {
   const review = await Review.create({
     user: req.user._id,

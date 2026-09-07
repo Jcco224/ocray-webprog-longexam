@@ -6,6 +6,9 @@ import ProductPage from './pages/LandingPages/ProductPage';
 import HomePage from './pages/LandingPages/HomePage';
 import AboutPage from './pages/LandingPages/AboutPage';
 import ProductListPage from './pages/LandingPages/ProductListPage';
+import CustomerAccountPage from './pages/AccountPages/CustomerAccountPage';
+import AdminDashboardPage from './pages/AccountPages/AdminDashboardPage';
+import UserProfilePage from './pages/AccountPages/UserProfilePage';
 
 // Auth Pages Structure
 import AuthLayout from './layouts/AuthLayout';
@@ -35,6 +38,18 @@ const routes = [
       {
         path: 'products/:name',
         element: <ProductPage />,
+      },
+      {
+        path: 'account',
+        element: <CustomerAccountPage />,
+      },
+      {
+        path: 'profile',
+        element: <UserProfilePage />,
+      },
+      {
+        path: 'admin',
+        element: <AdminDashboardPage />,
       },
     ],
   },

@@ -9,19 +9,33 @@ export function notFound(req, _res, next) {
 export function errorHandler(error, _req, res, _next) {
   let status = error.status ?? HttpStatus.INTERNAL_SERVER_ERROR;
   let message = error.message ?? 'Internal server error';
+  let errorType = 'ServerError';
   let details;
 
   if (error.name === 'ValidationError') {
     status = HttpStatus.BAD_REQUEST;
     message = 'Validation failed';
+    errorType = 'ValidationError';
     details = Object.values(error.errors).map((item) => item.message);
   } else if (error.code === 11000) {
     status = HttpStatus.CONFLICT;
     message = `${Object.keys(error.keyPattern ?? {})[0] ?? 'Value'} already exists`;
+    errorType = 'DuplicateValueError';
   } else if (error.name === 'CastError') {
     status = HttpStatus.BAD_REQUEST;
     message = `Invalid ${error.path}`;
+    errorType = 'ValidationError';
+  } else if (error.type === 'entity.parse.failed') {
+    status = HttpStatus.BAD_REQUEST;
+    message = 'Invalid JSON request body';
+    errorType = 'ValidationError';
+  } else if (status === HttpStatus.UNAUTHORIZED) {
+    errorType = 'AuthenticationError';
+  } else if (status === HttpStatus.FORBIDDEN) {
+    errorType = 'AuthorizationError';
+  } else if (status === HttpStatus.NOT_FOUND) {
+    errorType = 'NotFoundError';
   }
 
-  res.status(status).json({ success: false, message, ...(details && { details }) });
+  res.status(status).json({ success: false, errorType, message, ...(details && { details }) });
 }

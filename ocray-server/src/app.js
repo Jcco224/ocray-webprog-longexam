@@ -30,6 +30,15 @@ app.get('/api/health', (_req, res) => {
   });
 });
 
+app.get('/api/debug/server-error', (_req, _res, next) => {
+  if (process.env.NODE_ENV === 'production') {
+    const error = new Error('Route not found: GET /api/debug/server-error');
+    error.status = 404;
+    return next(error);
+  }
+  return next(new Error('Sample server error for error-handling screenshot'));
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/category', categoryRoutes);

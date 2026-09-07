@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button';
-import { registerAccount, saveToken } from '../../services/api';
+import { registerAccount, saveSession } from '../../services/api';
 
 const inputClasses =
   'mt-2 w-full rounded-2xl border border-white/15 bg-[#080808] px-5 py-4 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-yellow-500 focus:bg-[#0f0f0f]';
@@ -19,8 +19,8 @@ const SignUpPage = () => {
     setStatus({ loading: true, error: '' });
     try {
       const result = await registerAccount(form);
-      saveToken(result.token);
-      navigate('/products');
+      saveSession(result);
+      navigate('/account');
     } catch (error) {
       setStatus({ loading: false, error: error.message });
     }

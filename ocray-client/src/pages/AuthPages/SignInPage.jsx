@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button';
-import { loginAccount, saveToken } from '../../services/api';
+import { loginAccount, saveSession } from '../../services/api';
 
 const inputClasses =
   'mt-3 w-full rounded-2xl border border-white/15 bg-[#080808] px-5 py-4 text-base text-white outline-none transition placeholder:text-zinc-500 focus:border-yellow-400 focus:bg-[#0f0f0f]';
@@ -20,8 +20,8 @@ const SignInPage = () => {
     setStatus({ loading: true, error: '' });
     try {
       const result = await loginAccount(form);
-      saveToken(result.token);
-      navigate('/products');
+      saveSession(result);
+      navigate(result.user?.role === 'admin' ? '/admin' : '/account');
     } catch (error) {
       setStatus({ loading: false, error: error.message });
     }

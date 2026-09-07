@@ -43,3 +43,37 @@ export async function getMyOrder(req, res) {
   if (!order) return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Order not found' });
   return res.json({ success: true, order });
 }
+
+export async function listOrders(req, res) {
+  const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 20, 1), 100);
+  const filter = {};
+  if (req.query.status) filter.status = req.query.status;
+
+  const [orders, total] = await Promise.all([
+    Order.find(filter)
+      .populate('user', 'username email firstName lastName')
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit),
+    Order.countDocuments(filter),
+  ]);
+
+  return res.json({ success: true, orders, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
+}
+
+export async function updateOrderStatus(req, res) {
+  const allowedStatuses = ['pending', 'confirmed', 'preparing', 'ready_for_claiming', 'completed', 'cancelled'];
+  if (!allowedStatuses.includes(req.body.status)) {
+    return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: 'Invalid order status' });
+  }
+
+  const order = await Order.findByIdAndUpdate(
+    req.params.id,
+    { status: req.body.status },
+    { new: true, runValidators: true },
+  ).populate('user', 'username email firstName lastName');
+
+  if (!order) return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Order not found' });
+  return res.json({ success: true, order });
+}

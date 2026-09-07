@@ -46,7 +46,7 @@ const orderSchema = new mongoose.Schema(
     subtotal: { type: Number, required: true, min: 0 },
     status: {
       type: String,
-      enum: ['pending', 'confirmed', 'preparing', 'shipped', 'completed', 'cancelled'],
+      enum: ['pending', 'confirmed', 'preparing', 'ready_for_claiming', 'completed', 'cancelled'],
       default: 'pending',
     },
     paymentMethod: {
