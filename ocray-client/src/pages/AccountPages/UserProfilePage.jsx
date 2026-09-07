@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../components/Button.jsx';
 import {
   changePassword,
+  fetchMyOrders,
   fetchProfile,
   getToken,
   saveSession,
@@ -12,6 +13,7 @@ import {
 const panelClass = 'rounded-3xl border border-amber-500/30 bg-white/95 p-6 shadow-[0_18px_48px_rgba(80,60,20,0.14)]';
 const inputClass = 'w-full rounded-xl border border-amber-700/25 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200';
 const labelClass = 'mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-amber-800';
+const formatOrderStatus = (status) => (status ?? 'pending').replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
 
 const emptyAddress = {
   recipientName: '',
@@ -26,6 +28,7 @@ const emptyAddress = {
 export default function UserProfilePage() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
+  const [orders, setOrders] = useState([]);
   const [form, setForm] = useState({ firstName: '', lastName: '', address: emptyAddress });
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [profileStatus, setProfileStatus] = useState({ loading: true, error: '', success: '' });
@@ -37,9 +40,10 @@ export default function UserProfilePage() {
       return;
     }
 
-    fetchProfile()
-      .then(({ user }) => {
+    Promise.all([fetchProfile(), fetchMyOrders()])
+      .then(([{ user }, orderData]) => {
         setProfile(user);
+        setOrders(orderData.orders ?? []);
         setForm({
           firstName: user.firstName ?? '',
           lastName: user.lastName ?? '',
@@ -49,6 +53,14 @@ export default function UserProfilePage() {
       })
       .catch((error) => setProfileStatus({ loading: false, error: error.message, success: '' }));
   }, [navigate]);
+
+  useEffect(() => {
+    if (!getToken()) return undefined;
+    const refreshOrderStatus = window.setInterval(() => {
+      fetchMyOrders().then((data) => setOrders(data.orders ?? [])).catch(() => {});
+    }, 10000);
+    return () => window.clearInterval(refreshOrderStatus);
+  }, []);
 
   const updateAddressField = (field, value) => {
     setForm((current) => ({
@@ -105,6 +117,28 @@ export default function UserProfilePage() {
 
       {profileStatus.error && <p role="alert" className="mb-5 rounded-xl bg-red-100 p-4 text-sm font-semibold text-red-800">{profileStatus.error}</p>}
       {profileStatus.success && <p role="status" className="mb-5 rounded-xl bg-green-100 p-4 text-sm font-semibold text-green-800">{profileStatus.success}</p>}
+
+      <section className="mb-6 rounded-3xl border border-amber-400/40 bg-zinc-950 p-6 text-white shadow-xl">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.24em] text-amber-400">Order Status</p>
+            <h2 className="mt-2 text-2xl font-black">My Latest Order</h2>
+          </div>
+          {orders[0] && <span className="rounded-full bg-amber-500 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white">{formatOrderStatus(orders[0].status)}</span>}
+        </div>
+        {orders[0] ? (
+          <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.06] p-4">
+            <p className="font-bold text-white">{orders[0].orderNumber}</p>
+            <p className="mt-1 text-sm text-zinc-300">Total: PHP {Number(orders[0].subtotal ?? 0).toLocaleString('en-PH')}</p>
+            {orders[0].status === 'ready_for_claiming' && <p className="mt-3 font-bold text-green-300">Your order is ready for pickup / claiming.</p>}
+            {orders[0].status === 'confirmed' && <p className="mt-3 font-semibold text-amber-200">Your order is confirmed and is being prepared.</p>}
+            {orders[0].status === 'pending' && <p className="mt-3 text-sm text-zinc-300">Your order is waiting for admin confirmation.</p>}
+          </div>
+        ) : (
+          <p className="mt-4 text-sm text-zinc-300">You have no orders yet. Add products to your cart and create an order.</p>
+        )}
+        <p className="mt-4 text-xs text-zinc-400">This status updates automatically after the admin changes your order.</p>
+      </section>
 
       <section className="grid gap-6 lg:grid-cols-2">
         <form className={panelClass} onSubmit={handleProfileUpdate}>

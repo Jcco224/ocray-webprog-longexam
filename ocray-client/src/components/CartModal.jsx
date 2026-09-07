@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import localProducts from '../assets/product-content.js';
 import {
   fetchCart,
   removeCartItem,
@@ -120,14 +121,24 @@ export default function CartModal({ open, onClose }) {
               {cart.items.map((item) => {
                 const productId = item.product?._id;
                 const isUpdating = updatingProduct === productId;
+                const productImage = localProducts.find((product) => product.name === item.product?.slug)?.image;
                 return (
                   <article key={productId} className="rounded-2xl border border-white/10 bg-white/[0.06] p-4">
                     <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className="font-bold text-white">{item.product?.title ?? 'Unavailable product'}</h3>
-                        <p className="mt-1 text-sm text-amber-300">
-                          PHP {Number(item.product?.price ?? 0).toLocaleString('en-PH')}
-                        </p>
+                      <div className="flex min-w-0 gap-3">
+                        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-amber-500/30 bg-zinc-800">
+                          {productImage ? (
+                            <img src={productImage} alt={item.product?.title ?? 'Cart product'} className="h-full w-full object-cover" />
+                          ) : (
+                            <div className="grid h-full w-full place-items-center text-[10px] font-bold text-zinc-400">NO IMAGE</div>
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-white">{item.product?.title ?? 'Unavailable product'}</h3>
+                          <p className="mt-1 text-sm text-amber-300">
+                            PHP {Number(item.product?.price ?? 0).toLocaleString('en-PH')}
+                          </p>
+                        </div>
                       </div>
                       <button
                         type="button"
