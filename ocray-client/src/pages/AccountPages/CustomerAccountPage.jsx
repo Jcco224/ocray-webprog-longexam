@@ -152,17 +152,30 @@ export default function CustomerAccountPage() {
           </div>
 
           <div className="mt-4 max-h-64 space-y-3 overflow-y-auto pr-1">
-            {cart?.items?.map((item) => (
+            {cart?.items?.map((item) => {
+              const productImage = localProducts.find((product) => product.name === item.product?.slug)?.image;
+              return (
               <div key={item.product?._id} className="rounded-2xl border border-white/10 bg-white/8 p-3">
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-bold text-white">{item.product?.title}</p>
-                    <p className="text-sm text-zinc-300">Qty {item.quantity}</p>
+                  <div className="flex min-w-0 gap-3">
+                    <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-amber-500/30 bg-zinc-800">
+                      {productImage ? (
+                        <img src={productImage} alt={item.product?.title ?? 'Cart product'} className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="grid h-full w-full place-items-center text-[10px] font-bold text-zinc-400">NO IMAGE</div>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-white">{item.product?.title}</p>
+                      <p className="mt-1 text-sm text-amber-300">PHP {Number(item.product?.price ?? 0).toLocaleString('en-PH')} each</p>
+                      <p className="text-sm text-zinc-300">Qty {item.quantity} · Subtotal: PHP {(Number(item.product?.price ?? 0) * item.quantity).toLocaleString('en-PH')}</p>
+                    </div>
                   </div>
                   <button className="text-xs font-bold uppercase tracking-[0.16em] text-red-300" onClick={() => removeCartItem(item.product._id).then(refreshCart)}>Remove</button>
                 </div>
               </div>
-            ))}
+              );
+            })}
             {!cart?.items?.length && <p className="text-sm text-zinc-300">Cart is empty.</p>}
           </div>
 
