@@ -50,6 +50,7 @@ const productSchema = new mongoose.Schema(
       default: 'in_stock',
     },
     imageKey: { type: String, required: true, trim: true },
+    imagePublicId: { type: String, trim: true, default: '' },
     isFeatured: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
   },

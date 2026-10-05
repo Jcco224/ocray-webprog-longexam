@@ -4,6 +4,7 @@ import localProducts from '../assets/product-content.js';
 import {
   fetchCart,
   removeCartItem,
+  resolveProductImage,
   updateCartItem,
 } from '../services/api.js';
 
@@ -74,6 +75,14 @@ export default function CartModal({ open, onClose }) {
     }
   };
 
+  const decreaseQuantity = async (productId, quantity) => {
+    if (quantity <= 1) {
+      await removeItem(productId);
+      return;
+    }
+    await changeQuantity(productId, quantity - 1);
+  };
+
   if (!open) return null;
 
   return (
@@ -121,7 +130,7 @@ export default function CartModal({ open, onClose }) {
               {cart.items.map((item) => {
                 const productId = item.product?._id;
                 const isUpdating = updatingProduct === productId;
-                const productImage = localProducts.find((product) => product.name === item.product?.slug)?.image;
+                const productImage = resolveProductImage(item.product, localProducts);
                 return (
                   <article key={productId} className="rounded-2xl border border-white/10 bg-white/[0.06] p-4">
                     <div className="flex items-start justify-between gap-4">
@@ -156,8 +165,8 @@ export default function CartModal({ open, onClose }) {
                         <button
                           type="button"
                           aria-label={`Decrease ${item.product?.title ?? 'product'} quantity`}
-                          disabled={!productId || isUpdating || item.quantity <= 1}
-                          onClick={() => changeQuantity(productId, item.quantity - 1)}
+                          disabled={!productId || isUpdating}
+                          onClick={() => decreaseQuantity(productId, item.quantity)}
                           className="h-8 w-9 bg-zinc-900 font-bold text-white transition hover:bg-amber-600 disabled:opacity-40"
                         >
                           −

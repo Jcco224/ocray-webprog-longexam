@@ -15,6 +15,7 @@ import {
   fetchProfile,
   getToken,
   removeCartItem,
+  resolveProductImage,
   searchProducts,
 } from '../../services/api.js';
 
@@ -153,7 +154,7 @@ export default function CustomerAccountPage() {
 
           <div className="mt-4 max-h-64 space-y-3 overflow-y-auto pr-1">
             {cart?.items?.map((item) => {
-              const productImage = localProducts.find((product) => product.name === item.product?.slug)?.image;
+              const productImage = resolveProductImage(item.product, localProducts);
               return (
               <div key={item.product?._id} className="rounded-2xl border border-white/10 bg-white/8 p-3">
                 <div className="flex items-start justify-between gap-3">
@@ -206,7 +207,10 @@ export default function CustomerAccountPage() {
               </div>
               <h3 className="font-bold text-zinc-950">{product.title}</h3>
               <p className="mt-1 text-sm text-zinc-600">{product.price}</p>
-              <Button className="mt-4" onClick={() => handleAddToCart(product.id)}>Add to Cart</Button>
+              <p className={`mt-1 text-xs font-bold uppercase tracking-wider ${product.stock === 'Out of stock' ? 'text-red-700' : 'text-green-700'}`}>{product.stock}</p>
+              <Button className="mt-4" onClick={() => handleAddToCart(product.id)} disabled={product.stock === 'Out of stock'}>
+                {product.stock === 'Out of stock' ? 'Out of Stock' : 'Add to Cart'}
+              </Button>
             </article>
           ))}
         </div>
@@ -226,6 +230,7 @@ export default function CustomerAccountPage() {
                 <p className="mt-2">Total: PHP {Number(order.subtotal ?? 0).toLocaleString('en-PH')}</p>
                 {order.status === 'ready_for_claiming' && <p className="mt-2 font-bold text-green-800">Your order is ready for claiming.</p>}
                 {order.status === 'confirmed' && <p className="mt-2 font-semibold text-amber-900">Your order was confirmed and is being prepared.</p>}
+                {order.status === 'completed' && <p className="mt-2 font-bold text-green-800">Your order has been completed. Thank you for shopping with us.</p>}
               </div>
             ))}
             {!orders.length && <p className="text-sm text-zinc-600">No ongoing orders yet.</p>}

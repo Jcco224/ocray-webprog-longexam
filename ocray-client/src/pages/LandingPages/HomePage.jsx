@@ -1,10 +1,12 @@
+import { useEffect, useState } from 'react';
 import Button from '../../components/Button';
+import { fetchStoreOverview } from '../../services/api.js';
 
-const stats = [
-  { value: '08', label: 'Products', icon: 'bag' },
-  { value: '06', label: 'Categories', icon: 'grid' },
-  { value: '24', label: 'Orders', icon: 'clipboard' },
-  { value: '03', label: 'Pickup Slots', icon: 'pin' },
+const makeStats = (overview) => [
+  { value: overview.products, label: 'Products', icon: 'bag' },
+  { value: overview.categories, label: 'Categories', icon: 'grid' },
+  { value: overview.orders, label: 'Orders', icon: 'clipboard' },
+  { value: overview.completedOrders, label: 'Completed Orders', icon: 'pin' },
 ];
 
 const categories = [
@@ -31,7 +33,30 @@ function LineIcon({ name, className = 'h-8 w-8' }) {
   );
 }
 
-const HomePage = () => (
+const HomePage = () => {
+  const [overview, setOverview] = useState({ products: 0, categories: 0, orders: 0, completedOrders: 0 });
+
+  useEffect(() => {
+    let active = true;
+    const loadOverview = () => {
+      fetchStoreOverview()
+        .then((data) => {
+          if (active) setOverview(data.overview);
+        })
+        .catch(() => {});
+    };
+
+    loadOverview();
+    const refresh = window.setInterval(loadOverview, 15000);
+    return () => {
+      active = false;
+      window.clearInterval(refresh);
+    };
+  }, []);
+
+  const stats = makeStats(overview);
+
+  return (
   <div className="w-full bg-[#eef2f7] px-3 py-4 sm:px-5 lg:px-8">
     <div className="mx-auto flex max-w-[1500px] flex-col gap-4">
       <section className="gold-silk-surface relative min-h-[310px] overflow-hidden rounded-[1.5rem] border border-white/70 shadow-[0_12px_34px_rgba(25,45,80,0.1)] sm:min-h-[350px]">
@@ -93,6 +118,7 @@ const HomePage = () => (
       </section>
     </div>
   </div>
-);
+  );
+};
 
 export default HomePage;

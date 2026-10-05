@@ -31,6 +31,10 @@ function ProductPage() {
       setCartStatus({ loading: false, message: 'Start the API and seed MongoDB before adding items.', error: true });
       return;
     }
+    if (product.stock === 'Out of stock') {
+      setCartStatus({ loading: false, message: 'This product is out of stock.', error: true });
+      return;
+    }
     setCartStatus({ loading: true, message: '', error: false });
     try {
       await addCartItem(product.id);
@@ -97,8 +101,8 @@ function ProductPage() {
           </div>
 
           <div className="mt-8 border-t-2 border-zinc-900 pt-6">
-            <Button variant="primary" className="mr-3" onClick={handleAddToCart} disabled={cartStatus.loading}>
-              {cartStatus.loading ? 'Adding...' : 'Add to Cart'}
+            <Button variant="primary" className="mr-3" onClick={handleAddToCart} disabled={cartStatus.loading || product.stock === 'Out of stock'}>
+              {product.stock === 'Out of stock' ? 'Out of Stock' : cartStatus.loading ? 'Adding...' : 'Add to Cart'}
             </Button>
             <Button to="/products">Back to Products</Button>
             {cartStatus.message && (

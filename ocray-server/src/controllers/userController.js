@@ -21,6 +21,27 @@ export async function updateProfile(req, res) {
   res.json({ success: true, user });
 }
 
+// A customer may update only the account that belongs to their JWT token.
+export async function updateOwnProfileById(req, res) {
+  if (req.user._id.toString() !== req.params.id) {
+    return res.status(HttpStatus.FORBIDDEN).json({
+      success: false,
+      message: 'Forbidden: you can only edit your own profile',
+    });
+  }
+
+  const updates = {};
+  for (const field of editableProfileFields) {
+    if (req.body[field] !== undefined) updates[field] = req.body[field];
+  }
+
+  const user = await User.findByIdAndUpdate(req.user._id, updates, {
+    new: true,
+    runValidators: true,
+  });
+  return res.json({ success: true, user });
+}
+
 export async function changePassword(req, res) {
   const { currentPassword, newPassword } = req.body;
   if (!currentPassword || !newPassword) {
@@ -55,6 +76,13 @@ export async function listUsers(req, res) {
     User.countDocuments(filter),
   ]);
   res.json({ success: true, users, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
+}
+
+// Admin-only lookup used by the /api/v1/user/:id authorization test.
+export async function getUserById(req, res) {
+  const user = await User.findById(req.params.id);
+  if (!user) return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'User not found' });
+  return res.json({ success: true, user });
 }
 
 export async function updateUserAccess(req, res) {

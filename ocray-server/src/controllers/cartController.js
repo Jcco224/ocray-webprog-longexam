@@ -19,7 +19,7 @@ export async function addItem(req, res) {
     return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: 'Quantity must be an integer from 1 to 99' });
   }
 
-  const product = await Product.findOne({ _id: req.body.productId, isActive: true });
+  const product = await Product.findOne({ _id: req.body.productId, isActive: true, availability: { $ne: 'out_of_stock' } });
   if (!product) return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Product not found' });
   if (product.availability !== 'preorder' && product.stockQuantity < quantity) {
     return res.status(HttpStatus.CONFLICT).json({ success: false, message: 'Requested quantity is unavailable' });

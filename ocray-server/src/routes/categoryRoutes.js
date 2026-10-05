@@ -6,14 +6,15 @@ import {
   listCategories,
   updateCategory,
 } from '../controllers/categoryController.js';
-import { requireAdmin, requireAuth } from '../middleware/auth.js';
+import { requireAuth } from '../middleware/authentication.js';
+import { authorize } from '../middleware/authorization.js';
 
 const router = Router();
 
 router.get('/', listCategories);
 router.get('/:slug', getCategory);
-router.post('/', requireAuth, requireAdmin, createCategory);
-router.patch('/:id', requireAuth, requireAdmin, updateCategory);
-router.delete('/:id', requireAuth, requireAdmin, archiveCategory);
+router.post('/', requireAuth, authorize('admin'), createCategory);
+router.patch('/:id', requireAuth, authorize('admin'), updateCategory);
+router.delete('/:id', requireAuth, authorize('admin'), archiveCategory);
 
 export default router;

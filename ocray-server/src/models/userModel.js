@@ -33,6 +33,8 @@ const userSchema = new mongoose.Schema(
     // Embedded document: the default address is part of the user profile.
     address: { type: addressSchema, default: undefined },
     isActive: { type: Boolean, default: true },
+    failedLoginAttempts: { type: Number, default: 0, min: 0 },
+    loginLockedUntil: { type: Date, default: null },
   },
   { timestamps: true, collection: 'users' },
 );
@@ -40,5 +42,6 @@ const userSchema = new mongoose.Schema(
 // Account administration and alphabetical customer lookup.
 userSchema.index({ role: 1, isActive: 1 }, { name: 'active_users_by_role' });
 userSchema.index({ lastName: 1, firstName: 1 }, { name: 'users_by_name' });
+userSchema.index({ loginLockedUntil: 1 }, { name: 'locked_login_accounts' });
 
 export default mongoose.model('User', userSchema);

@@ -6,14 +6,18 @@ import {
   listProducts,
   updateProduct,
 } from '../../controllers/v1/productController.js';
-import { requireAdmin, requireAuth } from '../../middleware/auth.js';
+import { requireAuth } from '../../middleware/authentication.js';
+import { authorize } from '../../middleware/authorization.js';
+import { uploadProductImage } from '../../controllers/productController.js';
+import uploadImageMiddleware, { validateUploadedImage } from '../../middleware/uploadImageMiddleware.js';
 
 const router = Router();
 
 router.get('/', listProducts);
+router.post('/:id/upload-image', requireAuth, authorize('admin'), uploadImageMiddleware.single('image'), validateUploadedImage, uploadProductImage);
 router.get('/:slug', getProduct);
-router.post('/', requireAuth, requireAdmin, createProduct);
-router.patch('/:id', requireAuth, requireAdmin, updateProduct);
-router.delete('/:id', requireAuth, requireAdmin, archiveProduct);
+router.post('/', requireAuth, authorize('admin'), uploadImageMiddleware.single('image'), validateUploadedImage, createProduct);
+router.patch('/:id', requireAuth, authorize('admin'), uploadImageMiddleware.single('image'), validateUploadedImage, updateProduct);
+router.delete('/:id', requireAuth, authorize('admin'), archiveProduct);
 
 export default router;

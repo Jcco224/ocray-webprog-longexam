@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../components/Button.jsx';
+import localProducts from '../../assets/product-content.js';
 import {
   approveReview,
   clearToken,
@@ -13,6 +14,7 @@ import {
   fetchUsers,
   getCurrentUser,
   getToken,
+  resolveProductImage,
   updateOrderStatus,
   updateProduct,
   updateReview,
@@ -32,7 +34,7 @@ const emptyProduct = {
   price: 0,
   stockQuantity: 1,
   availability: 'in_stock',
-  imageKey: 'test-product.webp',
+  imageKey: '',
   isFeatured: false,
   isActive: true,
 };
@@ -47,6 +49,9 @@ export default function AdminDashboardPage() {
   const [users, setUsers] = useState([]);
   const [productForm, setProductForm] = useState(emptyProduct);
   const [editingProductId, setEditingProductId] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [savingProduct, setSavingProduct] = useState(false);
   const [message, setMessage] = useState('');
   const [activeSection, setActiveSection] = useState('products');
 
@@ -92,20 +97,66 @@ export default function AdminDashboardPage() {
     }));
   };
 
+  useEffect(() => {
+    if (!imageFile) {
+      setImagePreview('');
+      return undefined;
+    }
+    const preview = URL.createObjectURL(imageFile);
+    setImagePreview(preview);
+    return () => URL.revokeObjectURL(preview);
+  }, [imageFile]);
+
+  const handleImageChange = (event) => {
+    const file = event.target.files?.[0] ?? null;
+    if (!file) {
+      setImageFile(null);
+      return;
+    }
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setMessage('Choose a JPEG, PNG, or WebP image.');
+      setImageFile(null);
+      event.target.value = '';
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage('Image must be 5 MB or smaller.');
+      setImageFile(null);
+      event.target.value = '';
+      return;
+    }
+    setMessage('');
+    setImageFile(file);
+  };
+
   const handleProductSubmit = async (event) => {
     event.preventDefault();
-    const payload = {
-      ...productForm,
-      price: Number(productForm.price),
-      stockQuantity: Number(productForm.stockQuantity),
-      supplier: productForm.supplier || null,
-    };
-    if (editingProductId) await updateProduct(editingProductId, payload);
-    else await createProduct(payload);
-    setMessage(editingProductId ? 'Product updated.' : 'Product created.');
-    setEditingProductId('');
-    setProductForm({ ...emptyProduct, category: categories[0]?._id || '', supplier: suppliers[0]?._id || '' });
-    await loadAdmin();
+    const formElement = event.currentTarget;
+    if (!editingProductId && !imageFile) {
+      setMessage('Choose a product image before creating the product.');
+      return;
+    }
+    const payload = new FormData();
+    Object.entries(productForm).forEach(([key, value]) => {
+      if (key === 'descriptions') payload.append(key, value[0]);
+      else if (key !== 'imageKey' || editingProductId) payload.append(key, value);
+    });
+    if (imageFile) payload.append('image', imageFile);
+    setSavingProduct(true);
+    try {
+      if (editingProductId) await updateProduct(editingProductId, payload);
+      else await createProduct(payload);
+      setMessage(editingProductId ? 'Product updated with its image.' : 'Product created with its image.');
+      setEditingProductId('');
+      setProductForm({ ...emptyProduct, category: categories[0]?._id || '', supplier: suppliers[0]?._id || '' });
+      setImageFile(null);
+      formElement.reset();
+      await loadAdmin();
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setSavingProduct(false);
+    }
   };
 
   const startEditProduct = (product) => {
@@ -123,6 +174,7 @@ export default function AdminDashboardPage() {
       isFeatured: Boolean(product.isFeatured),
       isActive: Boolean(product.isActive),
     });
+    setImageFile(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -207,16 +259,28 @@ export default function AdminDashboardPage() {
             <option value="">No supplier</option>
             {suppliers.map((supplier) => <option key={supplier._id} value={supplier._id}>{supplier.name}</option>)}
           </select>
-          <input className={inputClass} name="imageKey" placeholder="imageKey" value={productForm.imageKey} onChange={handleProductChange} required />
+          <label className={`${inputClass} flex flex-col gap-1`}>
+            <span className="text-xs font-bold text-zinc-700">Product image (JPEG, PNG, or WebP; max 5 MB)</span>
+            <input type="file" name="image" accept="image/jpeg,image/png,image/webp" onChange={handleImageChange} required={!editingProductId} />
+          </label>
           <input className={`${inputClass} md:col-span-2`} name="descriptions" placeholder="description" value={productForm.descriptions[0]} onChange={handleProductChange} required />
-          <Button type="submit" className="md:col-span-3">{editingProductId ? 'Edit Product' : 'Create Product'}</Button>
+          {(imagePreview || resolveProductImage(productForm, localProducts)) && (
+            <div className="md:col-span-3">
+              <p className="mb-2 text-sm font-bold text-zinc-700">Image preview</p>
+              <img src={imagePreview || resolveProductImage(productForm, localProducts)} alt="Product preview" className="h-40 w-40 rounded-xl border border-zinc-200 object-cover" />
+            </div>
+          )}
+          <Button type="submit" className="md:col-span-3" disabled={savingProduct}>{savingProduct ? 'Saving...' : editingProductId ? 'Edit Product' : 'Create Product'}</Button>
         </form>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
           {products.slice(0, 8).map((product) => (
             <div key={product._id} className="flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-3">
-              <div>
+              <div className="flex items-center gap-3">
+                {resolveProductImage(product, localProducts) && <img src={resolveProductImage(product, localProducts)} alt="" className="h-14 w-14 rounded-lg object-cover" />}
+                <div>
                 <p className="font-bold text-zinc-950">{product.title}</p>
                 <p className="text-sm text-zinc-600">PHP {Number(product.price).toLocaleString('en-PH')}</p>
+                </div>
               </div>
               <Button onClick={() => startEditProduct(product)}>Edit</Button>
             </div>
@@ -248,6 +312,7 @@ export default function AdminDashboardPage() {
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Button onClick={() => setOrderStatus(order, 'confirmed')} disabled={order.status === 'confirmed' || order.status === 'ready_for_claiming'}>Confirm Order</Button>
                   <Button onClick={() => setOrderStatus(order, 'ready_for_claiming')} disabled={order.status === 'ready_for_claiming'}>Ready for Claiming</Button>
+                  <Button onClick={() => setOrderStatus(order, 'completed')} disabled={order.status !== 'ready_for_claiming'}>Complete Order</Button>
                 </div>
               </div>
             ))}

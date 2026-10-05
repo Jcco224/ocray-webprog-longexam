@@ -21,10 +21,11 @@ export const clearToken = () => {
 
 export async function apiRequest(path, options = {}) {
   const token = getToken();
+  const isFormData = options.body instanceof FormData;
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
@@ -55,6 +56,7 @@ export const searchProducts = (params = {}) => {
 export const fetchProduct = (slug) => apiRequest(`/product/${encodeURIComponent(slug)}`);
 export const fetchCategories = () => apiRequest('/category');
 export const fetchSuppliers = () => apiRequest('/supplier');
+export const fetchStoreOverview = () => apiRequest('/store/overview');
 
 export const addCartItem = (productId, quantity = 1) => apiRequest('/cart/items', {
   method: 'POST',
@@ -131,5 +133,11 @@ export function adaptProduct(product, localProducts) {
     price: `PHP ${Number(product.price).toLocaleString('en-PH')}`,
     stock: availabilityLabels[product.availability] ?? product.availability,
     content: product.descriptions,
+    image: resolveProductImage(product, localProducts),
   };
+}
+
+export function resolveProductImage(product, localProducts = []) {
+  if (/^https:\/\/res\.cloudinary\.com\//i.test(product?.imageKey ?? '')) return product.imageKey;
+  return localProducts.find((item) => item.name === product?.slug)?.image ?? '';
 }

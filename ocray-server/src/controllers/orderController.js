@@ -2,13 +2,16 @@ import crypto from 'node:crypto';
 import { HttpStatus } from '../config/constants.js';
 import Cart from '../models/cartModel.js';
 import Order from '../models/orderModel.js';
+import Product from '../models/productModel.js';
 
 export async function createOrder(req, res) {
   const cart = await Cart.findOne({ user: req.user._id }).populate('items.product');
   if (!cart?.items.length) return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: 'Cart is empty' });
 
   const unavailable = cart.items.find(({ product, quantity }) => (
-    !product?.isActive || (product.availability !== 'preorder' && product.stockQuantity < quantity)
+    !product?.isActive
+    || product.availability === 'out_of_stock'
+    || (product.availability !== 'preorder' && product.stockQuantity < quantity)
   ));
   if (unavailable) return res.status(HttpStatus.CONFLICT).json({ success: false, message: 'A cart item is unavailable' });
 
@@ -20,17 +23,66 @@ export async function createOrder(req, res) {
     quantity,
   }));
   const subtotal = items.reduce((total, item) => total + item.unitPrice * item.quantity, 0);
-  const order = await Order.create({
-    orderNumber: `BDX-${Date.now()}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`,
-    user: req.user._id,
-    items,
-    shippingAddress: req.body.shippingAddress,
-    subtotal,
-    paymentMethod: req.body.paymentMethod,
-  });
-  cart.items = [];
-  await cart.save();
-  res.status(HttpStatus.CREATED).json({ success: true, order });
+  const reducedProducts = [];
+
+  try {
+    // Deduct physical stock only when the customer creates an order.
+    // Preorder items are not deducted because they do not use on-hand inventory.
+    for (const { product, quantity } of cart.items) {
+      if (product.availability === 'preorder') continue;
+
+      const updatedProduct = await Product.findOneAndUpdate(
+        {
+          _id: product._id,
+          isActive: true,
+          availability: { $ne: 'out_of_stock' },
+          stockQuantity: { $gte: quantity },
+        },
+        [
+          {
+            $set: {
+              stockQuantity: { $subtract: ['$stockQuantity', quantity] },
+              availability: {
+                $cond: [
+                  { $eq: [{ $subtract: ['$stockQuantity', quantity] }, 0] },
+                  'out_of_stock',
+                  '$availability',
+                ],
+              },
+            },
+          },
+        ],
+        { new: true },
+      );
+
+      if (!updatedProduct) {
+        const error = new Error('A cart item is no longer available');
+        error.status = HttpStatus.CONFLICT;
+        throw error;
+      }
+      reducedProducts.push({ productId: product._id, quantity, previousAvailability: product.availability });
+    }
+
+    const order = await Order.create({
+      orderNumber: `BDX-${Date.now()}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`,
+      user: req.user._id,
+      items,
+      shippingAddress: req.body.shippingAddress,
+      subtotal,
+      paymentMethod: req.body.paymentMethod,
+    });
+    cart.items = [];
+    await cart.save();
+    return res.status(HttpStatus.CREATED).json({ success: true, order });
+  } catch (error) {
+    // If order creation fails after a deduction, restore the affected stock.
+    await Promise.all(reducedProducts.map(({ productId, quantity, previousAvailability }) => Product.findByIdAndUpdate(
+      productId,
+      { $inc: { stockQuantity: quantity }, $set: { availability: previousAvailability } },
+    )));
+    if (!error.status) error.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    throw error;
+  }
 }
 
 export async function listMyOrders(req, res) {

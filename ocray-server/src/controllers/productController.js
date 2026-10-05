@@ -1,6 +1,44 @@
 import { HttpStatus } from '../config/constants.js';
+import mongoose from 'mongoose';
 import Category from '../models/categoryModel.js';
 import Product from '../models/productModel.js';
+import { normalizeProductInput, productInputWithImage, uploadImageBuffer } from './productImageUpload.js';
+
+export async function uploadProductImage(req, res) {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: 'Invalid product ID.' });
+  }
+
+  if (!req.file) {
+    return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: 'Choose an image to upload.' });
+  }
+
+  const product = await Product.findById(req.params.id);
+  if (!product || !product.isActive) {
+    return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Product not found.' });
+  }
+
+  try {
+    const result = await uploadImageBuffer(req.file.buffer);
+
+    product.imageKey = result.secure_url;
+    product.imagePublicId = result.public_id;
+    await product.save();
+
+    return res.status(HttpStatus.OK).json({
+      success: true,
+      message: 'Product image uploaded successfully.',
+      imageUrl: result.secure_url,
+      publicId: result.public_id,
+    });
+  } catch (error) {
+    console.error('Product image upload failed:', error);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: 'Image upload failed. Please try again.',
+    });
+  }
+}
 
 export async function listProducts(req, res) {
   const filter = { isActive: true };
@@ -42,12 +80,25 @@ export async function getProduct(req, res) {
 }
 
 export async function createProduct(req, res) {
-  const product = await Product.create(req.body);
+  const draft = new Product({
+    ...normalizeProductInput(req.body),
+    ...(req.file ? { imageKey: 'pending-upload' } : {}),
+  });
+  await draft.validate();
+  const input = await productInputWithImage(req.body, req.file);
+  const product = await Product.create(input);
   res.status(HttpStatus.CREATED).json({ success: true, product });
 }
 
 export async function updateProduct(req, res) {
-  const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: 'Invalid product ID.' });
+  }
+  if (!await Product.exists({ _id: req.params.id })) {
+    return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Product not found' });
+  }
+  const input = await productInputWithImage(req.body, req.file);
+  const product = await Product.findByIdAndUpdate(req.params.id, input, {
     new: true,
     runValidators: true,
   });

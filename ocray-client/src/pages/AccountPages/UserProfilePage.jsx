@@ -132,6 +132,7 @@ export default function UserProfilePage() {
             <p className="mt-1 text-sm text-zinc-300">Total: PHP {Number(orders[0].subtotal ?? 0).toLocaleString('en-PH')}</p>
             {orders[0].status === 'ready_for_claiming' && <p className="mt-3 font-bold text-green-300">Your order is ready for pickup / claiming.</p>}
             {orders[0].status === 'confirmed' && <p className="mt-3 font-semibold text-amber-200">Your order is confirmed and is being prepared.</p>}
+            {orders[0].status === 'completed' && <p className="mt-3 font-bold text-green-300">Your order has been completed. Thank you for shopping with us.</p>}
             {orders[0].status === 'pending' && <p className="mt-3 text-sm text-zinc-300">Your order is waiting for admin confirmation.</p>}
           </div>
         ) : (

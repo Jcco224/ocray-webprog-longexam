@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { addItem, getCart, removeItem, updateItem } from '../controllers/cartController.js';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth } from '../middleware/authentication.js';
 
 const router = Router();
 router.use(requireAuth);

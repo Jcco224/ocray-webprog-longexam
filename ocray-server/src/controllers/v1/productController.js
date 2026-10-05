@@ -2,6 +2,8 @@ import { HttpStatus } from '../../config/constants.js';
 import Category from '../../models/categoryModel.js';
 import Product from '../../models/productModel.js';
 import Supplier from '../../models/supplierModel.js';
+import mongoose from 'mongoose';
+import { normalizeProductInput, productInputWithImage } from '../productImageUpload.js';
 
 const defaultSort = { isFeatured: -1, createdAt: -1 };
 const sortOptions = {
@@ -97,7 +99,13 @@ export async function getProduct(req, res) {
 }
 
 export async function createProduct(req, res) {
-  const product = await Product.create(req.body);
+  const draft = new Product({
+    ...normalizeProductInput(req.body),
+    ...(req.file ? { imageKey: 'pending-upload' } : {}),
+  });
+  await draft.validate();
+  const input = await productInputWithImage(req.body, req.file);
+  const product = await Product.create(input);
   await product.populate(['category', 'supplier']);
   return res.status(HttpStatus.CREATED).json({
     success: true,
@@ -108,7 +116,14 @@ export async function createProduct(req, res) {
 }
 
 export async function updateProduct(req, res) {
-  const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: 'Invalid product ID.', count: 0, data: null });
+  }
+  if (!await Product.exists({ _id: req.params.id })) {
+    return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Product not found.', count: 0, data: null });
+  }
+  const input = await productInputWithImage(req.body, req.file);
+  const product = await Product.findByIdAndUpdate(req.params.id, input, {
     new: true,
     runValidators: true,
   }).populate(['category', 'supplier']);
